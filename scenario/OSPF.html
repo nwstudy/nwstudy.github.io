@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<head>
+     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+     <META http-equiv="Content-Style-Type" content="text/css">
+     <TITLE>演習02：OSPF - Cisco Packet Tracerを活用したネットワーク演習</TITLE>
+</head>
+
+<body>
+     <div class="head">
+          <h1>Cisco Packet Tracerを活用したネットワーク演習</h1>
+          <p>Cisco Packet Tracerは，Cisco社が提供するネットワークシミュレータです。<br>
+               無料で利用でき，ネットワーク構築を練習することができます。<br>
+               このサイトでは，Packet Tracerの利用方法と，CCNA対策に役立つ演習シナリオを紹介します。</p>
+     </div>
+     
+     <div class="nav">
+          <ul>
+               <li><a href="../index.html">🏠ホーム・PTの使い方</a></li>
+               <li><a href="list.html">演習シナリオ</a></li>
+          </ul>
+     </div>
+
+     <div class="content">
+          <div class="article">
+               <h2><i>演習02</i>OSPF</h2>
+               <div id="pktfile">
+                    <ul>
+                         <li><a href="file/02_OSPF.pkt">📓<b>問題</b>ファイルをダウンロード</a></li>
+                         <li><a href="file/02_OSPF_answer.pkt">📒<b>解答</b>ファイルをダウンロード</a></li>
+                    </ul>
+               </div>
+               <h3>構成図</h3>
+               <img src="OSPF_diagram.png" width="640px">
+               <h3>課題</h3>
+               <p>R1-3で<b>OSPFによる動的ルーティング</b>を行い，<b>PC1・PC2の間の通信</b>を可能にしてください。<br>
+               なお，問題ファイルでは次の設定項目は完了しています。</p>
+               <ul>
+                    <li>機器配置</li>
+                    <li>PC1・2のIPアドレス付与・デフォルトゲートウェイ設定</li>
+                    <li>R1-3のホスト名設定</li>
+                    <li>機器間のケーブル接続</li>
+               </ul>
+               <h3>手順</h3>
+               <h4>⑴　R1-3の物理I/FおよびループバックI/Fを有効化し，IPアドレスを設定する。</h4>
+               <h4>⑵　R1-3にOSPFの設定を行う。</h4>
+               <div class="indent2">
+                    <p>R1-3共通設定項目</p>        
+                    <table>
+                         <tr>
+                              <th>プロセスID</th><th>有効化するI/F</th><th>エリア</th>
+                         </tr>
+                         <tr>
+                              <td>1</td><td>G0/0/1・G0/0/2<br>G0/0/0（R1・2のみ）</td><td>バックボーン（エリア0）</td>
+                         </tr>
+                    </table>
+               </div>    
+               <h4>⑶　R1のPC1に、R2のPC2につながるI/Fを，passive I/Fに設定する。</h4>
+               <h4>⑷　お互いがOSPFネイバーとなったことを確認する。</h4>
+               <h4>⑸　R1・2のルーティングテーブルを見て，R1にPC2，R2にPC1のネットワークへのルートが存在することを確認する。</h4>
+               <h4>⑹　PC1からPC2，PC2からPC1へtracertを行い，R1-R2間のリンクを経由して通信できることを確認する。</h4>
+               <h4>⑺　R1のG0/0/2の帯域幅を10Mbpsに変更する。</h4>
+               <h4>⑻　PC1からPC2へtracertを行い，R1-R3-R2間のリンクを経由した経路に変化したことを確認する。</h4>
+               <h3>使用するコマンド</h3>
+               <ul>
+                    <li><code>router ospf ＜プロセスID＞</code></li>
+                    <li><code>network ＜ネットワークアドレス＞ ＜ワイルドカードマスク＞ area ＜エリア番号＞</code></li>
+                    <li><code>passive-interface ＜I/F名＞</code></li>
+                    <li><code>show ip ospf neighbor</code></li>
+                    <li><code>bandwidth ＜帯域幅(kbps)＞</code></li>
+               </ul>
+               <h3>解説</h3>
+               <h4>⑴　R1-3の物理I/FおよびループバックI/Fを有効化し，IPアドレスを設定する。</h4>
+               <div class="indent2">
+                    <p>操作自体は，<i>演習01</i>の復習です。<br>
+                    なおループバックI/Fとは，ルータ内部の仮想的なI/Fで，OSPFでは<b>ルータID</b>の決定に使用されます。</p>
+                    <div class="config">
+                         <p>R1# configure terminal<br>
+                         R1(config)# interface g0/0/0<br>
+                         R1(config-if)# ip address 192.168.10.254 255.255.255.0<br>
+                         R1(config-if)# no shutdown<br>
+                         R1(config)# interface g0/0/1<br>
+                         R1(config-if)# ip address 10.0.13.1 255.255.255.0<br>
+                         R1(config-if)# no shutdown<br>
+                         R1(config-if)# interface g0/0/2<br>
+                         R1(config-if)# ip address 10.0.12.1 255.255.255.0<br>
+                         R1(config-if)# no shutdown<br>
+                         R1(config-if)# interface Loopback0<br>
+                         R1(config-if)# ip address 1.1.1.1 255.255.255.255<br>
+                         R1(config-if)# exit<br>
+                         R1(config)#</p>
+                    </div>
+               </div>
+               <h4>⑵　R1-3にOSPFの設定を行う。</h4>
+               <div class="indent2">
+                    <p><code>router ospf</code>コマンドで，OSPFを起動します。<br>
+                    <code>network</code>コマンドで，NWアドレスとワイルドカードマスクを使用してOSPFを有効化するI/Fを指定します。</p>
+                    <div class="config">
+                         <p>R1(config)# router ospf 1<br>
+                         R1(config-router)# network 192.168.10.0 0.0.0.255 area 0<br>
+                         R1(config-router)# network 10.0.12.0 0.0.0.255 area 0<br>
+                         R1(config-router)# network 10.0.13.0 0.0.0.255 area 0</p>
+                    </div>
+                    <div class="config">
+                         <p>R2(config)# router ospf 1<br>
+                         R2(config-router)# network 192.168.20.0 0.0.0.255 area 0<br>
+                         R2(config-router)# network 10.0.12.0 0.0.0.255 area 0<br>
+                         R2(config-router)# network 10.0.23.0 0.0.0.255 area 0</p>
+                    </div>
+                    <div class="config">
+                         <p>R3(config)# router ospf 1<br>
+                         R3(config-router)# network 10.0.13.0 0.0.0.255 area 0<br>
+                         R3(config-router)# network 10.0.23.0 0.0.0.255 area 0<br>
+                         R3(config-router)# exit<br>
+                         R3(config)#</p>
+                    </div>
+               </div>
+               <h4>⑶　R1のPC1に、R2のPC2につながるI/Fを，passive I/Fに設定する。</h4>
+               <div class="indent2">
+                    <p>OSPFでは，Helloパケットの定期的な交換による死活監視を行いますが，
+                         対向機器がない，もしくはPCやサーバなどのエンドポイントである場合，Helloパケットを送るだけムダになってしまいます。
+                         そこで，このようなI/FからはHelloパケットの送受信を止め，不必要な通信を行わないように設定することができます。
+                         これを，<b>passive I/F</b>と呼びます。<br>
+                    <code>passive-interface</code>コマンドで，物理I/Fをpassive I/Fに設定します。</p>
+                    <div class="config">
+                         <p>R1(config-router)# passive-interface G0/0/0<br>
+                         R1(config-router)# exit<br>
+                         R1(config)#</p>
+                    </div>
+                    <div class="config">
+                         <p>R2(config-router)# passive-interface G0/0/0<br>
+                         R2(config-router)# exit<br>
+                         R2(config)#</p>
+                    </div>
+               </div>
+               <h4>⑷　お互いがOSPFネイバーとなったことを確認する。</h4>
+               <div class="indent2">
+                    <p><code>show ip ospf neighbor</code>コマンドで，OSPFネイバーテーブルを確認します。<br>
+                    “Neighbor ID”はOSPFのルータIDを示しており，⑴で設定したループバックI/FのIPアドレスと同じ値になっているはずです。<br>
+                    “State”の値が“FULL”になっていれば，ネイバー関係が成立し，LSDBの同期が完了した状態です。<br>
+                    以下に，R1で<code>show ip ospf neighbor</code>を実行した結果を示します。</p>
+                    <img src="OSPF_neighbor.png" width=928px>
+               </div>
+               <h4>⑸　R1・2のルーティングテーブルを見て，R1にPC2，R2にPC1のネットワークへのルートが存在することを確認する。</h4>
+               <div class="indent2">
+                    <p>これも<i>演習01</i>の復習です。<code>show ip route</code>コマンドで，各ルータのルーティングテーブルを確認しましょう。</br>
+                    なお，先頭の“O”は，OSPFによって学習したルートであることを表しています。<br>
+                    以下に，R1で<code>show ip route</code>を実行した結果を示します。</p>
+                    <img src="OSPF_route1.png" width=928px>
+               </div>
+               <h4>⑹　PC1からPC2，PC2からPC1へtracertを行い，R1-R2間のリンクを経由して通信できることを確認する。</h4>
+               <div class="indent2">
+                    <p>下図の通り，R1-R2間のリンクを経由していることが分かります。</p>
+                    <img src="OSPF_trace1.png" width=928px>
+               </div>
+               <h4>⑺　R1のG0/0/2の帯域幅を10Mbpsに変更する。</h4>
+               <div class="indent2">
+                    <p>OSPFはリンク状態型の動的ルーティングプロトコルで，メトリックとして帯域幅を元に算出されるコストを用いています。ある経路のコストの合計をパスコストと呼びますが，その計算には以下のようなルールがあります。</p>
+                    <ul>
+                         <li>パケットがその機器から出力されるとき，出力I/Fの帯域幅に応じたコストを加算する。</li>
+                         <li>デフォルトでは，コストは「100Mbps÷出力I/Fの帯域幅」で算出する。</li>
+                    </ul>
+                    <p>この構成だと，全てのI/FがGbEであるため，100Mbps÷1Gbps＝0.1ですが，切上げて1となります。しかし，例えばI/Fが10Mbpsだと，そのI/Fでは100Mbps÷10Mbps＝10がコストに加算されることになります。</p>
+                    <p>I/Fの帯域幅は<code>bandwidth</code>コマンドで変更することができます。このシナリオでは，R1のG0/0/2の帯域幅を10Mbpsに変更し，経路選択への影響を確かめます。</p>
+                    <div class="config">
+                         <p>R1(config)# interface G0/0/2<br>
+                         R1(config-if)# bandwidth 10000<br>
+                         R1(config-if)# end<br>
+                         R1#</p>
+                    </div>
+               </div>
+               <h4>⑻　PC1からPC2へtracertを行い，R1-R3-R2間のリンクを経由した経路に変化したことを確認する。</h4>
+               <div class="indent2">
+                    <p>PC1からPC2の通信は，下図の通りR1-R3-R2間のリンクを経由するように変化しました。</p>
+                    <img src="OSPF_trace2.png" width=928px>
+                    <p>R1のG0/0/2の帯域幅が10Mbpsになったことで，</p>
+                    <ul>
+                         <li>R1-R2間のリンク経由：10</li>
+                         <li>R1-R3-R2間のリンク経由：1＋1＝2</li>
+                    </ul>
+                    <p>となり，よりコストの少ない経路が選択されるようになったためです。</p>
+                    <p>なお，PC2からPC1の通信は，帯域幅変更の影響を受けないので，変わらずR2-R1間のリンクを経由した経路をとります。コストは，あくまでも出力時に加算されるためです。</p>
+               </div>
+          </div>
+     </div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<head>
+     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+     <META http-equiv="Content-Style-Type" content="text/css">
+     <TITLE>演習03：ACL - Cisco Packet Tracerを活用したネットワーク演習</TITLE>
+</head>
+
+<body>
+     <div class="head">
+          <h1>Cisco Packet Tracerを活用したネットワーク演習</h1>
+          <p>Cisco Packet Tracerは，Cisco社が提供するネットワークシミュレータです。<br>
+               無料で利用でき，ネットワーク構築を練習することができます。<br>
+               このサイトでは，Packet Tracerの利用方法と，CCNA対策に役立つ演習シナリオを紹介します。</p>
+     </div>
+     
+     <div class="nav">
+          <ul>
+               <li><a href="../index.html">🏠ホーム・PTの使い方</a></li>
+               <li><a href="list.html">演習シナリオ</a></li>
+          </ul>
+     </div>
+
+     <div class="content">
+          <div class="article">
+               <h2><i>演習03</i>ACL</h2>
+               <div id="pktfile">
+                    <ul>
+                         <li><a href="file/03_ACL.pkt">📓<b>問題</b>ファイルをダウンロード</a></li>
+                         <li><a href="file/03_ACL_answer.pkt">📒<b>解答</b>ファイルをダウンロード</a></li>
+                    </ul>
+               </div>
+               <h3>構成図</h3>
+               <img src="ACL_diagram.png" width="800px">
+               <h3>課題</h3>
+               <p>Rに<b>ACL</b>の設定を行い，次のような<b>通信制御</b>を実現してください。</p>
+               <ul>
+                    <li>PC1・2の相互通信を禁止する。</li>
+                    <li>PC1・2ともに，SVへのHTTP・HTTPS通信は許可するが，ICMPは禁止する。</li>
+                    <li>上記以外の通信は全て許可する。</li>
+               </ul>
+               なお，問題ファイルでは次の設定項目は完了しています。</p>
+               <ul>
+                    <li>機器配置</li>
+                    <li>PC1・2，SVのIPアドレス付与・デフォルトゲートウェイ設定</li>
+                    <li>R，L2SW1・2のホスト名設定・IPアドレス付与</li>
+                    <li>機器間のケーブル接続</li>
+               </ul>
+               <h3>手順</h3>
+               <h4>⑴　PC1・2同士でpingに成功すること，PC1・2からSVへのpingおよびHTTPの通信に成功することを確認する。<br>
+               　　なおHTTPの通信は，PCのwebブラウザシミュレータのアドレス欄に「http://10.0.0.1」と入力することで確認する。</h4>
+               <h4>⑵　RにACLを設定する。</h4>
+               <div class="indent2">
+                    <table>
+                         <tr>
+                              <th>ACL番号</th><th>動作</th><th>プロトコル</th><th>送信元</th><th>宛先</th>
+                         </tr>
+                         <tr>
+                              <td>101</td><td>禁止</td><td>IP</td><td>PC1のNW</td><td>PC2のNW</td>
+                         </tr>
+                         <tr>
+                              <td>101</td><td>許可</td><td>TCP</td><td>PC1のNW</td><td>SV（80・443番ポート）</td>
+                         </tr>
+                         <tr>
+                              <td>101</td><td>禁止</td><td>ICMP</td><td>PC1のNW</td><td>SV</td>
+                         </tr>
+                         <tr>
+                              <td>101</td><td>許可</td><td>IP</td><td>PC1のNW</td><td>全て</td>
+                         </tr>
+                         <tr>
+                              <td>102</td><td>禁止</td><td>IP</td><td>PC2のNW</td><td>PC1のNW</td>
+                         </tr>
+                         <tr>
+                              <td>102</td><td>許可</td><td>TCP</td><td>PC2のNW</td><td>SV（80・443番ポート）</td>
+                         </tr>
+                         <tr>
+                              <td>102</td><td>禁止</td><td>ICMP</td><td>PC2のNW</td><td>SV</td>
+                         </tr>
+                         <tr>
+                              <td>102</td><td>許可</td><td>IP</td><td>PC2のNW</td><td>全て</td>
+                         </tr>
+                    </table>
+               </div>
+               <h4>⑶　⑵で作成したACLをI/Fに適用する。</h4>
+               <div class="indent2">
+                    <table>
+                         <tr>
+                              <th>ACL番号</th><th>I/F</th><th>方向</th>
+                         </tr>
+                         <tr>
+                              <td>101</td><td>G0/0/1</td><td>in</td>
+                         </tr>
+                         <tr>
+                              <td>102</td><td>G0/0/2</td><td>in</td>
+                         </tr>
+                    </table>
+               </div>
+               <h4>⑷　PC1・2同士でpingに失敗すること，PC1・2からSVへのpingが失敗すること，HTTPの通信に成功することを確認する。</h4>
+               <h3>使用するコマンド</h3>
+               <ul>
+                    <li><code>access-list ＜ACL番号＞ ＜permit | deny＞</code></li>
+                    <li><code>ip access-group ＜ACL番号＞ ＜適用方向＞</code></li>
+               </ul>
+               <h3>解説</h3>
+               <h4>⑴　PC1・2同士でpingに成功すること，PC1・2からSVへのpingおよびHTTPの通信に成功することを確認する。<br>
+                    　　なおHTTPの通信は，PCのwebブラウザシミュレータのアドレス欄に「http://10.0.0.1」と入力することで確認する。</h4>
+               <div class="indent2">
+                    <p>問題ファイルでは，IPアドレスとデフォルトゲートウェイの設定のみがされている状態なので，通信制御は行われていません。<br>
+                    PC1からPC2・SVへpingを，SVへHTTPアクセスを行った結果を，以下に示します。</p>
+                    <img src="ACL_ping_http1.jpg" width=928px>
+               </div>
+               <h4>⑵　RにACLを設定する。</h4>
+               <div class="indent2">
+                    <p>ACLによる通信制御は，<b>①ルールを作る→②ルールをI/Fに適用する</b>，という2段階の手順を踏むことになります。⑵の作業は①にあたります。</p>
+                    <p>ACLのルール作成にあたっては，次の点に注意してください。</p>
+                    <p>①エントリは，<b>記述した順番に適用</b>される。</p>
+                    <div class="indent4">
+                         <p>I/Fを通過するパケットがルールに当てはまるかをルールの上からチェックし，いずれかのエントリに合致した時点で探索をやめます。
+                         「Aは禁止，A以外は許可」というポリシーの場合，1行目に「全て許可」，2行目に「Aは禁止」を記述してしまうと，禁止したいAも1行目のエントリに合致してしまい，通信できてしまうことになります。</p>
+                    </div>
+                    <p>②明示的に<b>記述されていない通信は，全てブロック</b>される。</p>
+                    <div class="indent4">
+                         <p>よく「暗黙のdeny」と呼ばれる仕組みです。
+                         「Aは禁止，A以外は許可」というポリシーの場合，「Aを禁止」というルールだけを記述すると，記述されていないA以外も自動的に禁止となり，通信不能になります。
+                         この場合，1行目に「Aを禁止」，2行目に「A以外を許可」と記述しなければなりません。</p>
+                    </div>
+                    <p>CiscoのルータやL3スイッチには，<b>標準ACL</b>と<b>拡張ACL</b>の2種類が存在し，以下のような違いがあります。</p>
+                    <ul>
+                         <li>標準ACL＝<b>送信元</b>の<b>IPアドレス</b>のみをチェック。ACL番号＝<b>1～99</b>・1300～1399</li>
+                         <li>拡張ACL＝<b>送信元・宛先</b>の<b>IPアドレス・ポート番号，通信プロトコル</b>をチェック。ACL番号＝<b>100～199</b>・2000～2699</li>
+                    </ul>
+                    <p>今回は，宛先のIPアドレスやプロトコルに応じた制御が求められているので，拡張ACLを使用します。<br>
+                    拡張ACLの作成コマンドは，以下の構文です。長いですが，覚えておいたほうが良いでしょう。</p>
+                    <code>access-list ＜ACL番号＞ ＜permit | deny＞ ＜プロトコル＞ ＜送信元IPアドレス＞ ＜ワイルドカードマスク＞ [ポート番号] ＜宛先IPアドレス＞ ＜ワイルドカードマスク＞ [ポート番号] [オプション]</code>
+                    <p>プロトコルには，基本的にはIP・ICMP・UDP・TCPのいずれかが入ります。プロトコルがUDP・TCPの場合，送信元・宛先のポート番号を指定できます。ポート番号は「443」などと単体で指定することもできますが，「<b>lt</b>」「<b>eq</b>」「<b>gt</b>」と不等号を用いて範囲指定したり，「eq domain」のように上位プロトコルを用いて指定することもできます。<br>
+                    IPアドレスの指定は，IPアドレスとワイルドカードマスクを使用する書式のほか，0.0.0.0/0の代わりに「<b>any</b>」，a.b.c.d/32の代わりに「<b>host</b> a.b.c.d」という簡易的な書式もあります。</p>
+                    <p>以上を踏まえ，Rに入力すべきコマンドは以下の通りです。</p>
+                    <div class="config">
+                         <p>R# configure terminal<br>
+                         R(config)# access-list 101 deny ip 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255<br>
+                         R(config)# access-list 101 permit tcp 192.168.10.0 0.0.0.255 host 10.0.0.1 eq www<br>
+                         R(config)# access-list 101 deny ip 192.168.10.0 0.0.0.255 host 10.0.0.1<br>
+                         R(config)# access-list 101 permit ip any any<br>
+                         R(config)# access-list 102 deny ip 192.168.20.0 0.0.0.255 192.168.10.0 0.0.0.255<br>
+                         R(config)# access-list 102 permit tcp 192.168.20.0 0.0.0.255 host 10.0.0.1 eq www<br>
+                         R(config)# access-list 102 deny ip 192.168.20.0 0.0.0.255 host 10.0.0.1<br>
+                         R(config)# access-list 102 permit ip any any<br></p>
+                    </div>
+               </div>
+               <h4>⑶　⑵で作成したACLをI/Fに適用する。</h4>
+               <div class="indent2">
+                    <p><b>①ルールを作る→②ルールをI/Fに適用する</b>の②にあたります。<code>ip access-group</code>コマンドで，適用するACLと方向を指定します。<br>
+                    <b>標準ACL</b>は送信元でしか制御できないので，必要な通信が止まらないよう<b>宛先に近いI/F</b>に設定することが多く，逆に<b>拡張ACL</b>はきめ細やかな制御を行えるので，<b>送信元に近いI/F</b>に設定します。
+                    今回は，101番をPC1がつながるG0/0/1に，102番をPC2がつながるG0/0/2に，それぞれinで適用します。</p>
+                    <div class="config">
+                         <p>R(config)# interface G0/0/1<br>
+                         R(config-if)# ip access-group 101 in<br>
+                         R(config-if)# interface G0/0/2<br>
+                         R(config-if)# ip access-group 102 in<br>
+                         R(config-if)# end<br>
+                         R#</p>
+                    </div>
+               </div>
+               <h4>⑷　PC1・2同士でpingに失敗すること，PC1・2からSVへのpingが失敗すること，HTTPの通信に成功することを確認する。</h4>
+               <div class="indent2">
+                    <p>ACLが正しく効果できているか確認します。<br>
+                    PC1からPC2・SVへpingを，SVへHTTPアクセスを行った結果を，以下に示します。</p>
+                    <img src="ACL_ping_http2.jpg" width=928px>
+               </div>
+          </div>
+     </div>
+</body>
+</html>
