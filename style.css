@@ -1,0 +1,177 @@
+/* 全般 */
+body {
+     background: #ffffff;
+     font-size: 16px;
+     line-height: 1.5;
+}
+a:link {
+     color: #04c;
+     text-decoration: none;
+}
+a:hover {
+     color: #f00;
+     text-decoration: none;
+}
+a:visited {
+     color: #999;
+     text-decoration: none;
+}
+a.white {
+     color: #FFFFFF;
+     text-decoration: none;
+}
+
+/* ヘッダ */
+.head {
+     margin: 0;
+     padding: 24px 0 0;
+     width: 100%;
+     background-color: #ffffff;
+     text-align: center;
+}
+.head h1 {
+     margin: 0;
+     padding: 0;
+     color: #333333;
+     font-size: 32px;
+}
+.head p {
+     margin: 0;
+     padding: 12px 0 0;
+     color: #999999;
+     font-size: 16px;
+}
+
+/* ナビゲーション */
+.nav {
+     margin: 0;
+     padding: 0 0 12px;
+     text-align: center;
+}
+.nav ul {
+     list-style: none;
+     padding-left: 0;
+}
+.nav li {
+     width: 300px;
+     text-align: center;
+     background-color: #5B9BD5;
+     display: inline-block;
+     height: 50px;
+     line-height: 50px;
+     margin: 1px;
+}
+.nav li a {
+     text-decoration: none;
+     color: #fff;
+     font-weight: bold;
+}
+
+/* コンテンツ */
+.content {
+     margin: 0 auto 48px;
+     padding: 24px 0 24px;
+}
+.article {
+     margin: 0 auto 24px;
+     padding: 0 0 24px;
+     width: 960px;
+}
+.article h2 {
+     margin: 0;
+     padding: 6px 0;
+     border-top: 3px solid #5B9BD5;
+     border-bottom: 3px solid #5B9BD5;
+     background-color: #DEEBF7;
+}
+.article h3 {
+     border-bottom: 1px solid #5B9BD5;
+}
+.article i {
+     margin-right: 0.5em;
+     padding: 0.05em 0.5em;
+     background-color: #5B9BD5;
+     color: #FFFFFF;
+     font-style: normal;
+     word-break: break-all;
+}
+.indent2 {
+     padding-left: 2em;
+}
+.indent4 {
+     padding-left: 2em;
+}
+table th {
+     padding: 0.25em 1em;
+     text-align: left;
+     background-color: #5B9BD5;
+     color: #FFFFFF;
+}
+table td {
+     padding: 0.25em 1em;
+     background-color: #E7E6E6;
+     color: #333333;
+}
+code {
+     margin:0 2px;
+     padding:0 5px;
+     border:1px solid #e0e0e0;
+     background-color:#fafafa;
+     border-radius:3px
+}
+.config {
+     margin: 0 0 0.5em;
+     padding: 0 1em;
+     background-color:#333333;
+     font-family:monospace;
+     color:#fafafa;
+}
+#pktfile {
+     margin: 0;
+     padding: 0;
+     text-align: left;
+}
+#pktfile ul {
+     list-style: none;
+     padding-left: 0;
+}
+#pktfile li {
+     width: auto;
+     padding: 0.5em 1em;
+     text-align: center;
+     background-color: #C55A11;
+     color:#FFFFFF;
+     display: inline-block;
+     height: auto;
+     line-height: auto;
+     margin: 1px;
+}
+#pktfile li a {
+     text-decoration: none;
+     color: #fff;
+     font-weight: bold;
+}
+#keyword {
+     position: relative;
+     margin: 12px 0;
+     padding: 1.75em 0.5em 0.25em;
+     border: solid 2px #ED7D31;
+     background-color: #FBE5D6;
+}
+#keyword .title{
+     position: absolute;
+     display: inline-block;
+     top: -2px;
+     left: -2px;
+     padding: 0.05em 0.5em;
+     height: 24px;
+     line-height: 24px;
+     font-size: 16px;
+     background-color: #ED7D31;
+     color: #ffffff;
+     font-weight: bold;
+}
+#keyword p {
+     margin: 0; 
+     padding: 0;
+}
