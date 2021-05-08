@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<head>
+     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+     <META http-equiv="Content-Style-Type" content="text/css">
+     <TITLE>演習05：DHCP・DNS - Cisco Packet Tracerを活用したネットワーク演習</TITLE>
+</head>
+
+<body>
+     <div class="head">
+          <h1>Cisco Packet Tracerを活用したネットワーク演習</h1>
+          <p>Cisco Packet Tracerは，Cisco社が提供するネットワークシミュレータです。<br>
+               無料で利用でき，ネットワーク構築を練習することができます。<br>
+               このサイトでは，Packet Tracerの利用方法と，CCNA対策に役立つ演習シナリオを紹介します。</p>
+     </div>
+     
+     <div class="nav">
+          <ul>
+               <li><a href="../index.html">🏠ホーム・PTの使い方</a></li>
+               <li><a href="list.html">演習シナリオ</a></li>
+          </ul>
+     </div>
+
+     <div class="content">
+          <div class="article">
+               <h2><i>演習05</i>DHCP・DNS</h2>
+               <div id="pktfile">
+                    <ul>
+                         <li><a href="file/05_DHCP_DNS.pkt">📓<b>問題</b>ファイルをダウンロード</a></li>
+                         <li><a href="file/05_DHCP_DNS_answer.pkt">📒<b>解答</b>ファイルをダウンロード</a></li>
+                    </ul>
+               </div>
+               <h3>構成図</h3>
+               <img src="DHCP_DNS_diagram.jpg" width="960px">
+               <h3>課題</h3>
+               <p>RからPC1-2に，<b>DHCP</b>を利用して<b>IPアドレス</b>を配布し，<b>デフォルトゲートウェイ・DNSサーバ</b>の情報を広告する設定を行います。
+               これにより，<b>Web-SVにFQDN</b>（example.com）<b>を利用して通信</b>を行えるようにしてください。<br>
+               なお，問題ファイルでは次の設定項目は完了しています。</p>
+               <ul>
+                    <li>機器配置</li>
+                    <li>Web-SVのIPアドレス付与・デフォルトゲートウェイ設定</li>
+                    <li>DNS-SVのIPアドレス付与・デフォルトゲートウェイ設定・Aレコード作成<br>（example.comを10.0.0.1に名前解決してDNSクライアントに回答する設定）</li>
+                    <li>R・L2SW1-2のホスト名設定・IPアドレス付与</li>
+                    <li>機器間のケーブル接続</li>
+               </ul>
+               <h3>手順</h3>
+               <h4>⑴　RからPC1-2へ，DHCPで192.168.10.0/24のIPアドレスを配布するが，.53と.201-254は配布しないので，除外する設定を行う。</h4>
+               <h4>⑵　次の通り，RにDHCPプールの設定を行う。</h4>
+               <div class="indent2">
+                    <table>
+                         <tr>
+                              <th>プール名</th><th>配布対象のNWアドレス</th><th>リース時間</th><th>デフォルトゲートウェイ</th><th>DNSサーバのアドレス</th>
+                         </tr>
+                         <tr>
+                              <td>EXAMPLE</td><td>192.168.10.0/24</td><td>24時間</td><td>192.168.10.254</td><td>192.168.10.53</td>
+                         </tr>
+                    </table>
+               </div>
+               <h4>⑶　RからPC1-2に，DHCPでIPアドレスが割当てられたことを確認する。</h4>
+               <h4>⑷　PC1-2からexample.comにwebブラウザでアクセスし，webページを閲覧できることを確認する。</h4>
+               <h3>使用するコマンド</h3>
+               <ul>
+                    <li><code>ip dhcp excluded-address ＜配布除外IPアドレスの先頭＞ ＜配布除外IPアドレスの末尾＞</code></li>
+                    <li><code>ip dhcp pool ＜DHCPプール名＞</code></li>
+                    <li><code>network ＜NWアドレス＞ ＜サブネットマスク＞</code></li>
+                    <li><code>default-router ＜デフォルトゲートウェイとして配布するIPアドレス＞</code></li>
+                    <li><code>dns-server ＜DNSサーバとして配布するIPアドレス＞</code></li>
+               </ul>
+               <h3>解説</h3>
+               <p>DHCPは，TCP/IPネットワークにおいてクライアントに必要な情報を自動的に設定するための，UDPで動作するプロトコルです。
+               「IPアドレスの配布」というイメージが強いかもしれませんが，デフォルトゲートウェイ・DNSサーバのIPアドレスも併せて広告する場合が多いです。</p>
+               <h4>⑴　RからPC1-2へ，DHCPで192.168.10.0/24のIPアドレスを配布するが，.53と.201-254は配布しないので，除外する設定を行う。</h4>
+               <div class="indent2">
+                    <p>「192.168.10.0/24のうち，.1-.200のIPアドレスを配布する」というのがこのシナリオの課題ですが，CiscoのルータをDHCPサーバにする場合は，
+                    「192.168.10.0/24のNWアドレスを配布対象にする」「.53と.201-.254は配布対象から除外する」という2つの設定を行うことになります。
+                    アドレスの除外は，例えばサーバやNW機器などが固定で付与されているIPアドレスが存在する場合に，IPアドレスの重複を防ぐために行われます。</p>
+                    しかし，配布対象を先に設定してしまうと，除外したいアドレスが先に配布されてしまう可能性があるため，除外アドレスを先に設定する場合があります。</p>
+                    <p>IPアドレスを配布対象から除外するには，<code>ip dhcp excluded-address</code>コマンドを使用します。</p>
+                    <div class="config">
+                         R(config)# ip dhcp excluded-address 192.168.10.53<br>
+                         R(config)# ip dhcp excluded-address 192.168.10.201 192.168.10.254
+                    </div>
+               </div>
+               <h4>⑵　RにDHCPプールの設定を行う。</h4>
+               <div class="indent2">
+                    <p>配布するIPアドレスとそのサブネットマスク，デフォルトゲートウェイ・DNSサーバのIPアドレスを，「DHCPプール」に設定します。
+                    これにより，クライアントからのDHCP Discoverを受信した際に，設定情報を通知することができるようになります。</p>
+                    <p>DHCPプールの作成は，<code>ip dhcp pool</code>コマンドを使用し，配布するIPアドレスなどの設定はDHCPコンフィギュレーションモードで行います。</p>
+                    <div class="config">
+                         R(config)#ip dhcp pool EXAMPLE<br>
+                         R(config-dhcp)# network 192.168.10.0 255.255.255.0<br>
+                         R(config-dhcp)# lease 1 0 0<br>
+                         R(config-dhcp)# default-router 192.168.10.254<br>
+                         R(config-dhcp)# dns-server 192.168.10.53
+                    </div>
+               </div>
+               <h4>⑶　RからPC1-2に，DHCPでIPアドレスが割当てられたことを確認する。</h4>
+               <div class="indent2">
+                    <p>CiscoルータからDHCPクライアントへのIPアドレス配布状況は，<code>show ip dhcp binding</code>コマンドで確認することができます。</p>
+                    <img src="DHCP_DNS_binding.jpg" width=928px>
+               </div>
+               <h4>⑷　PC1-2からexample.comにwebブラウザでアクセスし，webページを閲覧できることを確認する。</h4>
+               <div class="indent2">
+                    <p>DHCPによって，PC1-2がIPアドレスとデフォルトゲートウェイの情報を得たことでWeb-SVへの通信が可能となり，DNSサーバの情報を得たことでexample.comの名前解決が可能となります。
+                    これらにより，ブラウザのアドレス欄にexample.comと入力するとWeb-SVの持つwebページが閲覧できるようになります。</p>
+                    <img src="DHCP_DNS_browser.jpg" width=928px>
+               </div>
+          </div>
+     </div>
+</body>
+</html>
