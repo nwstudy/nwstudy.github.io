@@ -102,12 +102,14 @@ a.white {
      padding-left: 2em;
 }
 table th {
+     font-size: 14px;
      padding: 0.25em 1em;
      text-align: left;
      background-color: #5B9BD5;
      color: #FFFFFF;
 }
 table td {
+     font-size: 14px;
      padding: 0.25em 1em;
      background-color: #E7E6E6;
      color: #333333;
@@ -115,16 +117,17 @@ table td {
 code {
      margin:0 2px;
      padding:0 5px;
-     border:1px solid #e0e0e0;
-     background-color:#fafafa;
+     border:1px solid  #e0e0e0;
+     background-color: #fafafa;
+     font-family: monospace, consolas, Osaka-Mono, MS Gothic;
      border-radius:3px
 }
 .config {
      margin: 0 0 0.5em;
      padding: 0 1em;
-     background-color:#333333;
-     font-family:monospace;
-     color:#fafafa;
+     background-color: #333333;
+     font-family: monospace, consolas, Osaka-Mono, MS Gothic;
+     color: #fafafa;
 }
 #pktfile {
      margin: 0;

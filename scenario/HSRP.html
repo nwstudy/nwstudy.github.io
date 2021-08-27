@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ja">
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<head>
+     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+     <META http-equiv="Content-Style-Type" content="text/css">
+     <TITLE>演習07：HSRP - Cisco Packet Tracerを活用したネットワーク演習</TITLE>
+</head>
+
+<body>
+     <div class="head">
+          <h1>Cisco Packet Tracerを活用したネットワーク演習</h1>
+          <p>Cisco Packet Tracerは，Cisco社が提供するネットワークシミュレータです。<br>
+               無料で利用でき，ネットワーク構築を練習することができます。<br>
+               このサイトでは，Packet Tracerの利用方法と，CCNA対策に役立つ演習シナリオを紹介します。</p>
+     </div>
+
+     <div class="nav">
+          <ul>
+               <li><a href="../index.html">🏠ホーム・PTの使い方</a></li>
+               <li><a href="list.html">演習シナリオ</a></li>
+          </ul>
+     </div>
+
+     <div class="content">
+          <div class="article">
+               <h2><i>演習07</i>HSRP</h2>
+               <div id="pktfile">
+                    <ul>
+                         <li><a href="file/07_hsrp.pkt">📓<b>問題</b>ファイルをダウンロード</a></li>
+                         <li><a href="file/07_hsrp_answer.pkt">📒<b>解答</b>ファイルをダウンロード</a></li>
+                    </ul>
+               </div>
+               <h3>構成図</h3>
+               <img src="hsrp_diagram.jpg" width="960px">
+               <h3>課題</h3>
+               <p>まずは，R1-2にPAT・デフォルトルートの設定を行い，<b>HSRPなしでPC⇔SVの通信を成立</b>させてください。<br>
+                    次に，R1-2のG0/0/0に<b>HSRP</b>の設定を行い，R1をactive，R2をstandbyとするファーストホップの冗長化を実現して下さい。<br>
+               </p>
+               <p>なお，問題ファイルでは次の設定項目は完了しています。</p>
+               <ul>
+                    <li>機器配置</li>
+                    <li>PC・SVのIPアドレス付与・デフォルトゲートウェイ設定</li>
+                    <li>R1-3のホスト名設定・IPアドレス付与</li>
+                    <li>L2SW1-2のホスト名設定</li>
+                    <li>機器間のケーブル接続</li>
+               </ul>
+               <h3>パラメータ</h3>
+               <h4>●IPアドレス</h4>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>I/F名</th>
+                         <th>IPアドレス</th>
+                         <th>サブネットマスク</th>
+                    </tr>
+                    <tr>
+                         <td rowspan="2">R1</td>
+                         <td>G0/0/0</td>
+                         <td>192.168.10.252</td>
+                         <td>255.255.255.0</td>
+                    </tr>
+                    <tr>
+                         <td>G0/0/1</td>
+                         <td>11.11.11.1</td>
+                         <td>255.255.255.252</td>
+                    </tr>
+                    <tr>
+                         <td rowspan="2">R2</td>
+                         <td>G0/0/0</td>
+                         <td>192.168.10.253</td>
+                         <td>255.255.255.0</td>
+                    </tr>
+                    <tr>
+                         <td>G0/0/1</td>
+                         <td>22.22.22.1</td>
+                         <td>255.255.255.252</td>
+                    </tr>
+                    <tr>
+                         <td rowspan="3">R3</td>
+                         <td>G0/0/0</td>
+                         <td>203.0.113.6</td>
+                         <td>255.255.255.248</td>
+                    </tr>
+                    <tr>
+                         <td>G0/0/1</td>
+                         <td>11.11.11.2</td>
+                         <td>255.255.255.252</td>
+                    </tr>
+                    <tr>
+                         <td>G0/0/2</td>
+                         <td>22.22.22.2</td>
+                         <td>255.255.255.252</td>
+                    </tr>
+               </table>
+               <p></p>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>IPアドレス</th>
+                         <th>サブネットマスク</th>
+                         <th>デフォルトGW</th>
+                    </tr>
+                    <tr>
+                         <td>PC</td>
+                         <td>192.168.10.1</td>
+                         <td>255.255.255.0</td>
+                         <td>192.168.10.252<br>⇒手順⑷で192.168.10.254に変更</td>
+                    </tr>
+                    <tr>
+                         <td>SV</td>
+                         <td>203.0.113.1</td>
+                         <td>255.255.255.248</td>
+                         <td>203.0.113.6</td>
+                    </tr>
+               </table>
+               <h4>●ルーティング</h4>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>宛先IPアドレス・サブネットマスク</th>
+                         <th>ネクストホップ</th>
+                    </tr>
+                    <tr>
+                         <td>R1</td>
+                         <td>0.0.0.0 / 0.0.0.0</td>
+                         <td>11.11.11.2</td>
+                    </tr>
+                    <tr>
+                         <td>R2</td>
+                         <td>0.0.0.0 / 0.0.0.0</td>
+                         <td>22.22.22.2</td>
+                    </tr>
+               </table>
+               <h4>●ACL</h4>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>ACL番号</th>
+                         <th>アクション</th>
+                         <th>送信元IPアドレス・WCマスク</th>
+                    </tr>
+                    <tr>
+                         <td>R1</td>
+                         <td>1</td>
+                         <td>許可</td>
+                         <td>192.168.10.0 0.0.0.255</td>
+                    </tr>
+                    <tr>
+                         <td>R2</td>
+                         <td>1</td>
+                         <td>許可</td>
+                         <td>192.168.10.0 0.0.0.255</td>
+                    </tr>
+               </table>
+               <h4>●NAT（PAT）</h4>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>内部I/F</th>
+                         <th>外部I/F</th>
+                         <th>内部ローカルアドレス</th>
+                         <th>内部グローバルアドレス</th>
+                    </tr>
+                    <tr>
+                         <td>R1</td>
+                         <td>G0/0/0</td>
+                         <td>G0/0/1</td>
+                         <td>ACL（ACL番号＝1）</td>
+                         <td>インターフェース（I/F番号＝G0/0/1）</td>
+                    </tr>
+                    <tr>
+                         <td>R2</td>
+                         <td>G0/0/0</td>
+                         <td>G0/0/1</td>
+                         <td>ACL（ACL番号＝1）</td>
+                         <td>インターフェース（I/F番号＝G0/0/1）</td>
+                    </tr>
+               </table>
+               <h4>●HSRP</h4>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>I/F名</th>
+                         <th>HSRPグループ番号</th>
+                         <th>仮想IPアドレス</th>
+                         <th>プライオリティ</th>
+                    </tr>
+                    <tr>
+                         <td>R1</td>
+                         <td>G0/0/0</td>
+                         <td>1</td>
+                         <td>192.168.10.254</td>
+                         <td>105</td>
+                    </tr>
+                    <tr>
+                         <td>R2</td>
+                         <td>G0/0/0</td>
+                         <td>1</td>
+                         <td>192.168.10.254</td>
+                         <td>100</td>
+                    </tr>
+               </table>
+               <h3>手順</h3>
+               <h4>⑴　R1-2のデフォルトルートをG0/0/1に設定する。</h4>
+               <h4>⑵　R1-2で，192.168.10.0/24を送信元とするパケットをG0/0/1のIPアドレスに変換するPATの設定を行う。</h4>
+               <h4>⑶　PC⇒SVへのpingに成功することを確認する。</h4>
+               <h4>⑷　パラメータを参照し，R1-2のG0/0/0でHSRPの設定を行う。<br>　　PCのデフォルトゲートウェイを仮想IPアドレス（192.168.10.254）に変更する。</h4>
+               <h4>⑸　HSRPのステータスを確認し，R1をactiveとしたHSRPグループが成立していることを確認する。</h4>
+               <h4>⑹　PC⇒SVへtracerouteを行い，R1を経由していることを確認する。</h4>
+               <h4>⑺　PC⇒SVへ連続pingを行いながら，R1のG0/0/0を無効化し，通信断ののち再びpingが成功することを確認する。</h4>
+               <h3>使用するコマンド【1】</h3>
+               <ul>
+                    <li><code>standby ＜HSRPグループ番号＞ ip ＜仮想IPアドレス＞</code></li>
+                    <li><code>standby ＜HSRPグループ番号＞ priority ＜HSRPプライオリティ＞ </code></li>
+                    <li><code>show standby</code></li>
+               </ul>
+               <h3>解説</h3>
+               <p>HSRPは，複数のルータに同一の仮想IPアドレスを割当てることで，デフォルトゲートウェイの冗長化を実現する，Cisco社独自のプロトコルです。なお，同様の技術に標準化されたプロトコルであるVRRPがあり，これはCisco社以外の機器でも実装することが出来ます。
+               </p>
+               <h4>⑴　R1-2のデフォルトルートをG0/0/1に設定する。</h4>
+               <div class="indent2">
+                    <p>まずはHSRPに入る前の下準備です。今回は，R1-2から左側を一つのLANとして，R1―R3間・R2―R3間をWAN回線に見立てています。したがって，R1・R2にそれぞれデフォルトルートとしてR3と接続しているI/Fを指定する必要があります。なお，point
+                         to pointのリンクであれば，I/Fをデフォルトルートとして設定することが出来ます（PPPoE回線を利用するときに，dialer I/Fを指定するのと同様です）。</p>
+                    <div class="config">
+                         <p>R1# configure terminal<br>
+                              R1(config)# ip route 0.0.0.0 0.0.0.0 g0/0/1<br>
+                              R1(config)#
+                         </p>
+                    </div>
+                    <div class="config">
+                         <p>R2# configure terminal<br>
+                              R2(config)# ip route 0.0.0.0 0.0.0.0 g0/0/1<br>
+                              R2(config)#
+                         </p>
+                    </div>
+               </div>
+               <h4>⑵　R1-2で，192.168.10.0/24を送信元とするパケットをG0/0/1のIPアドレスに変換するPATの設定を行う。</h4>
+               <div class="indent2">
+                    <p>これはNAT（PAT）の復習です。<a href="nat_pat.html"></a><i>演習04</i></a>をご覧ください。</p>
+                    <div class="config">
+                         <p>R1(config)# access-list 1 permit 192.168.10.0 0.0.0.255<br>
+                              R1(config)# interface g0/0/0<br>
+                              R1(config-if)# ip nat inside<br>
+                              R1(config-if)# interface g0/0/1<br>
+                              R1(config-if)# ip nat outside<br>
+                              R1(config-if)# exit<br>
+                              R1(config)# ip nat inside source list 1 interface g0/0/1 overload<br>
+                              R1(config)#</p>
+                    </div>
+                    <div class="config">
+                         <p>R2(config)# access-list 1 permit 192.168.10.0 0.0.0.255<br>
+                              R2(config)# interface g0/0/0<br>
+                              R2(config-if)# ip nat inside<br>
+                              R2(config-if)# interface g0/0/1<br>
+                              R2(config-if)# ip nat outside<br>
+                              R2(config-if)# exit<br>
+                              R2(config)# ip nat inside source list 1 interface g0/0/1 overload<br>
+                              R2(config)#</p>
+                    </div>
+               </div>
+               <h4>⑶　PC⇒SVへのpingに成功することを確認する。</h4>
+               <div class="indent2">
+                    <p>R3は192.168.10.0/24宛のルートを持っていないので，NAT（PAT）が有効になっていないと，ICMPの応答が返ってこないはずです。PC⇒SVへのpingに成功すれば，ここまでの設定は正しく行われているはずです。
+                    </p>
+                    <img src="hsrp_nat.jpg" width="928px">
+               </div>
+               <h4>⑷　パラメータを参照し，R1-2のG0/0/0でHSRPの設定を行う。<br>　　PCのデフォルトゲートウェイを仮想IPアドレス（192.168.10.254）に変更する。</h4>
+               <div class="indent2">
+                    <p>ここからが，HSRPの設定です。HSRPグループ・仮想IPアドレス・HSRPプライオリティの設定を，R1-2のG0/0/0に行います。<br>
+                         HSRPグループとは，同一の仮想IPアドレスを割当てるルータの集まりのことです。HSRPプライオリティは，デフォルトは100で，0～255の間で設定でき，大きいルータがactiveとなります。<br>
+                         これに合せて，PCのデフォルトゲートウェイを，R1のG0/0/0の実IPアドレスである192.168.10.252から，仮想IPアドレスである192.168.10.254に変更してください。
+                    </p>
+                    <p>これらの設定により，仮想IPアドレス「192.168.10.254」宛のパケットはactiveであるR1が担い，ダウンした際はactiveがR2に切り替り，引続き192.168.10.0/24にデフォルトゲートウェイが提供されるようになります。
+                    </p>
+                    <div class="config">
+                         <p>R1(config)# interface g0/0/0<br>
+                              R1(config-if)# standby 1 ip 192.168.10.254<br>
+                              R1(config-if)# standby 1 priority 105<br>
+                              R1(config-if)# end<br>
+                              R1#</p>
+                    </div>
+                    <div class="config">
+                         <p>R2(config)# interface g0/0/0<br>
+                              R2(config-if)# standby 1 ip 192.168.10.254<br>
+                              R2(config-if)# end<br>
+                              R2#</p>
+                    </div>
+               </div>
+               <h4>⑸　HSRPのステータスを確認し，R1をactiveとしたHSRPグループが成立していることを確認する。</h4>
+               <div class="indent2">
+                    <p><code>show standby</code>コマンドで，HSRPグループのステータスを表示することが出来ます。仮想IPアドレスが192.168.10.254で，R1がactive，R2がstandbyとなっていることを確認してください。
+                    </p>
+                    <img src="hsrp_show_standby1.jpg" width="928px">
+               </div>
+               <h4>⑹　PC⇒SVへtracerouteを行い，R1を経由していることを確認する。</h4>
+               <div class="indent2">
+                    <p>R1がactiveとなっているため，R1を経由していることを確認します。</p>
+                    <img src="hsrp_tracert1.jpg" width="928px">
+               </div>
+               <h4>⑺　PC⇒SVへ連続pingを行いながら，R1のG0/0/0を無効化し，通信断ののち再びpingが成功することを確認する。</h4>
+               <div class="indent2">
+                    <p>HSRPグループに参加したルータは，helloパケットをマルチキャスト宛に送信し，activeルータの生存を定期的に確認しています。これが途切れると，activeルータがdownしたと判断し，standbyルータがactiveに切り替ります。<br>
+                         デフォルトでは3秒間隔でhelloパケットを送信し，10秒途切れると障害と判断する設定になっているので，切り替りまでには最大で13秒かかります。</p>
+                    <p>PC⇒SVに連続pingを行いながら，R1のG0/0/0に<code>shutdown</code>コマンドを投入して無効化し，実際に10～13秒程度で通信が復旧するか確認しましょう。</p>
+                    <img src="hsrp_ping1.jpg" width="928px">
+               </div>
+          </div>
+     </div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<head>
+     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+     <META http-equiv="Content-Style-Type" content="text/css">
+     <TITLE>演習06：VLAN - Cisco Packet Tracerを活用したネットワーク演習</TITLE>
+</head>
+
+<body>
+     <div class="head">
+          <h1>Cisco Packet Tracerを活用したネットワーク演習</h1>
+          <p>Cisco Packet Tracerは，Cisco社が提供するネットワークシミュレータです。<br>
+               無料で利用でき，ネットワーク構築を練習することができます。<br>
+               このサイトでは，Packet Tracerの利用方法と，CCNA対策に役立つ演習シナリオを紹介します。</p>
+     </div>
+
+     <div class="nav">
+          <ul>
+               <li><a href="../index.html">🏠ホーム・PTの使い方</a></li>
+               <li><a href="list.html">演習シナリオ</a></li>
+          </ul>
+     </div>
+
+     <div class="content">
+          <div class="article">
+               <h2><i>演習06</i>VLAN</h2>
+               <div id="pktfile">
+                    <ul>
+                         <li><a href="file/06_vlan.pkt">📓<b>問題</b>ファイルをダウンロード</a></li>
+                         <li><a href="file/06_VLAN_answer.pkt">📒<b>解答</b>ファイルをダウンロード</a></li>
+                    </ul>
+               </div>
+               <h3>構成図</h3>
+               <img src="VLAN_diagram.jpg" width="920px">
+               <h3>課題</h3>
+               <p>L2SW1に<b>VLAN</b>の，Rに<b>サブI/F</b>の設定を行うことで，PC1-2相互の，およびPC1-2⇔SV間の通信を可能にしてください。</p>
+               <p>なお，問題ファイルでは次の設定項目は完了しています。</p>
+               <ul>
+                    <li>機器配置</li>
+                    <li>PC1・2，SVのIPアドレス付与・デフォルトゲートウェイ設定</li>
+                    <li>Rのホスト名設定・IPアドレス付与（G0/0/1のみ）</li>
+                    <li>L2SW1のホスト名設定</li>
+                    <li>機器間のケーブル接続</li>
+               </ul>
+               <h3>手順</h3>
+               <h4>⑴　L2SW1でVLAN10・VLAN20を作成する。</h4>
+               <h4>⑵　L2SW1のF0/1・F0/2をアクセスポートとし，それぞれVLAN10・VLAN20をアサインする。</h4>
+               <h4>⑶　L2SW1のG0/1をトランクポートとし，VLAN10・VLAN20の通過を許可する。</h4>
+               <h4>⑷　L2SW1にVLANが作成されたことと，I/Fに適切なVLANがアサインされたことを確認する。</h4>
+               <h4>⑸　RのG0/0/0を有効化した上で，サブI/Fを作成し，IPアドレスの付与とVLANタグの設定を行う。</h4>
+               <h4>⑹　PC1-2相互の，およびPC1-2⇔SV間のpingに成功することを確認する。</h4>
+               <h3>使用するコマンド</h3>
+               <ul>
+                    <li><code>vlan ＜VLAN番号＞</code></li>
+                    <li><code>switchport mode access</code></li>
+                    <li><code>switchport access vlan ＜VLAN番号＞</code></li>
+                    <li><code>switchport mode trunk</code></li>
+                    <li><code>switchport trunk allowed vlan ＜VLAN番号＞</code></li>
+                    <li><code>interface ＜I/F番号＞.＜論理番号＞</code></li>
+                    <li><code>encapsulation [isl | dot1q] ＜VLAN番号＞</code></li>
+               </ul>
+               <h3>解説</h3>
+               <p>VLANは，“virtual LAN”というその名の通り，レイヤ2の機器において仮想的なLANを作る技術です。スイッチを内部で論理的に分割し，VLAN10という「子スイッチ」とVLAN20という「子スイッチ」を作り出している，と考えると分かりやすいと思います。
+               </p>
+               <h4>⑴　L2SW1でVLAN10・VLAN20を作成する。</h4>
+               <div class="indent2">
+                    <p>まず初めに，VLAN10・VLAN20という論理的な「子スイッチ」を作ります。</p>
+                    <div class="config">
+                         <p>L2SW1# configure terminal<br>
+                              L2SW1(config)# vlan 10<br>
+                              L2SW1(config-vlan)# vlan 20<br>
+                              L2SW1(config-vlan)# exit<br>
+                              L2SW1(config)#</p>
+                    </div>
+               </div>
+               <h4>⑵　L2SW1のF0/1・F0/2をアクセスポートとし，それぞれVLAN10・VLAN20をアサインする。</h4>
+               <div class="indent2">
+                    <p>アクセスポートとは，一つのVLANのみに所属するスイッチポートのことです。あるVLANにアサインされたアクセスポートから，別のVLANに所属されたアクセスポートへ通信することはできません。「VLANをアクセスポートにアサインする」というのは，スイッチポートをそのVLANに所属させることを意味します。<br>
+                         先程の「子スイッチ」のイメージで図に示すと，以下のようになります。</p>
+                    <img src="vlan_accessport.jpg" width="960px">
+                    <p>次のコマンドを入力し，F0/1をVLAN10の，F0/2をVLAN20のアクセスポートに設定しましょう。</p>
+                    <div class="config">
+                         <p>L2SW1(config)# interface f0/1<br>
+                              L2SW1(config-if)# switchport mode access<br>
+                              L2SW1(config-if)# switchport access vlan 10<br>
+                              L2SW1(config-if)# interface f0/2<br>
+                              L2SW1(config-if)# switchport mode access<br>
+                              L2SW1(config-if)# switchport access vlan 20<br>
+                              L2SW1(config-if)#</p>
+                    </div>
+                    <p>なおアクセスポートは，VLANと物理ポートが1:1で結びついているため，<b>ポートVLAN</b>とも呼ばれます。</p>
+               </div>
+               <h4>⑶　L2SW1のG0/1をトランクポートとし，VLAN10・VLAN20の通過を許可する。</h4>
+               <div class="indent2">
+                    <p>トランクポートとは，2つ以上のVLANに所属するスイッチポートのことです。複数のVLANの通信を通過することができるので，
+                         トランクポートから出力する際，イーサネットフレームにタグを付与することで，どのVLANの通信かを区別しています。</p>
+                    <img src="vlan_trunkport.jpg" width="960px">
+                    <p>トランクポートは，上位のスイッチやルータへのアップリンクとなるポートに設定することが多いです。ここでは，Rに接続するF0/24をトランクポートとし，VLAN10・VLAN20のフレームを通過できるように設定しましょう。
+                    </p>
+                    <div class="config">
+                         <p>L2SW1(config-if)# interface g0/1<br>
+                              L2SW1(config-if)# switchport mode trunk<br>
+                              L2SW1(config-if)# switchport trunk allowed vlan 10,20<br>
+                              L2SW1(config-if)# end<br>
+                              L2SW1#
+                         </p>
+                    </div>
+                    <p>なおトランクポートでは，イーサネットフレームにタグを付与するこの動きから，<b>タグVLAN</b>とも呼ばれます。</p>
+               </div>
+               <h4>⑷　L2SW1にVLANが作成されたことと，I/Fに適切なVLANがアサインされたことを確認する。</h4>
+               <div class="indent2">
+                    <p><code>show vlan brief</code>コマンドを使うと，作成したVLANと，そのVLANをアサインしているアクセスポートの一覧を確認することができます。<br>
+                         なお，トランクポートは特定のVLANに所属しているわけではないので，この画面上には表示されません。確認する場合は，<code>show interface ＜I/F番号＞ trunk</code>コマンドを使用します。
+                    </p>
+                    <img src="vlan_show.jpg" width="960px">
+               </div>
+               <h4>⑸　RのG0/0/0を有効化した上で，サブI/Fを作成し，IPアドレスの付与とVLANタグの設定を行う。</h4>
+               <div class="indent2">
+                    <p>今度は，ルータ側の設定です。VLAN10とVLAN20ではネットワークが異なるため，当然ながらデフォルトゲートウェイも別のアドレスである必要があります。しかし，L2SW1に接続されたRのポートは，G0/0/0しかありません。<br>
+                         そこで，G0/0/0という物理I/Fを<b>サブI/Fという仮想のI/Fへ論理的に分割</b>し，そこにIPアドレスを付与することで，それぞれのVLANにとってのデフォルトゲートウェイとして機能させます。<br>
+                         ここで注意すべきなのは，対向のスイッチとカプセル化方式・VLAN
+                         IDが一致していなければならないということです。カプセル化方式というのは，VLANタグを付与して通信を識別するプロトコルのことで，ISL・IEEE 802.1Qがこれに該当します。</p>
+                    <p>サブI/Fを作成するには，まずは物理I/Fを有効化します。その上で，例えば物理I/FがG0/0/0ならば「G0/0/0.1」のように，末尾に論理番号を付加します。パラメータを参照しながらIPアドレスを付与し，今回はIEEE
+                         802.1Qを用いる設定を行います。</p>
+                    </p>
+                    <div class="config">
+                         <p>R# configure terminal<br>
+                              R(config)# interface G0/0/0<br>
+                              R(config-if)# no shutdown<br>
+                              R(config-if)# interface G0/0/0.1<br>
+                              R(config-subif)# encapsulation dot1q 10<br>
+                              R(config-subif)# ip address 192.168.10.254 255.255.255.0<br>
+                              R(config-subif)# interface G0/0/0.2<br>
+                              R(config-subif)# encapsulation dot1q 20<br>
+                              R(config-subif)# ip address 192.168.20.254 255.255.255.0<br>
+                              R(config-subif)# end<br>
+                              R#</p>
+                    </div>
+               </div>
+               <h4>⑹　PC1-2相互の，およびPC1-2⇔SV間のpingに成功することを確認する。</h4>
+          </div>
+     </div>
+</body>
+</html>
