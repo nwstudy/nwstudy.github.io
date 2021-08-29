@@ -264,7 +264,9 @@
                <div class="indent2">
                     <p>R3は192.168.10.0/24宛のルートを持っていないので，NAT（PAT）が有効になっていないと，ICMPの応答が返ってこないはずです。PC⇒SVへのpingに成功すれば，ここまでの設定は正しく行われているはずです。
                     </p>
-                    <img src="07_hsrp_fig01.jpg" width="928px">
+                    <div style="text-align:center;">
+                         <img src="07_hsrp_fig01.jpg" width="928px">
+                    </div>
                </div>
                <h4>⑷　パラメータを参照し，R1-2のG0/0/0でHSRPの設定を行う。<br>　　PCのデフォルトゲートウェイを仮想IPアドレス（192.168.10.254）に変更する。</h4>
                <div class="indent2">
@@ -292,21 +294,28 @@
                <div class="indent2">
                     <p><code>show standby</code>コマンドで，HSRPグループのステータスを表示することが出来ます。仮想IPアドレスが192.168.10.254で，R1がactive，R2がstandbyとなっていることを確認してください。
                     </p>
-                    <img src="07_hsrp_fig02.jpg" width="928px">
+                    <div style="text-align:center;">
+                         <img src="07_hsrp_fig02.jpg" width="928px">
+                    </div>
                </div>
                <h4>⑹　PC⇒SVへtracerouteを行い，R1を経由していることを確認する。</h4>
                <div class="indent2">
                     <p>R1がactiveとなっているため，R1を経由していることを確認します。</p>
-                    <img src="07_hsrp_fig03.jpg" width="928px">
+                    <div style="text-align:center;">
+                         <img src="07_hsrp_fig03.jpg" width="928px">
+                    </div>
                </div>
                <h4>⑺　PC⇒SVへ連続pingを行いながら，R1のG0/0/0を無効化し，通信断ののち再びpingが成功することを確認する。</h4>
                <div class="indent2">
                     <p>HSRPグループに参加したルータは，helloパケットをマルチキャスト宛に送信し，activeルータの生存を定期的に確認しています。これが途切れると，activeルータがdownしたと判断し，standbyルータがactiveに切り替ります。<br>
                          デフォルトでは3秒間隔でhelloパケットを送信し，10秒途切れると障害と判断する設定になっているので，切り替りまでには最大で13秒かかります。</p>
                     <p>PC⇒SVに連続pingを行いながら，R1のG0/0/0に<code>shutdown</code>コマンドを投入して無効化し，実際に10～13秒程度で通信が復旧するか確認しましょう。</p>
-                    <img src="07_hsrp_fig04.jpg" width="928px">
+                    <div style="text-align:center;">
+                         <img src="07_hsrp_fig04.jpg" width="928px">
+                    </div>
                </div>
           </div>
      </div>
 </body>
+
 </html>
