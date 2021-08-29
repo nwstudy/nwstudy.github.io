@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<head>
+     <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+     <META http-equiv="Content-Style-Type" content="text/css">
+     <TITLE>演習01：静的ルーティング - Cisco Packet Tracerを活用したネットワーク演習</TITLE>
+</head>
+
+<body>
+     <div class="head">
+          <h1>Cisco Packet Tracerを活用したネットワーク演習</h1>
+          <p>Cisco Packet Tracerは，Cisco社が提供するネットワークシミュレータです。<br>
+               無料で利用でき，ネットワーク構築を練習することができます。<br>
+               このサイトでは，Packet Tracerの利用方法と，CCNA対策に役立つ演習シナリオを紹介します。</p>
+     </div>
+
+     <div class="nav">
+          <ul>
+               <li><a href="../index.html">🏠ホーム・PTの使い方</a></li>
+               <li><a href="list.html">演習シナリオ</a></li>
+          </ul>
+     </div>
+
+     <div class="content">
+          <div class="article">
+               <h2><i>演習01</i>静的ルーティング</h2>
+               <div id="pktfile">
+                    <ul>
+                         <li><a href="file/【演習01】静的ルーティング.pkt">📓<b>問題</b>ファイルをダウンロード</a></li>
+                         <li><a href="file/【演習01】静的ルーティング-解答">📒<b>解答</b>ファイルをダウンロード</a></li>
+                    </ul>
+               </div>
+               <h3>構成図</h3>
+               <img src="01_static_diagram.jpg" width="580px">
+               <h3>課題</h3>
+               <p>R1-2で<b>静的ルーティング</b>の設定を行い，<b>PC1⇔PC2の間の通信</b>を可能にしてください。<br>
+                    なお，問題ファイルでは次の設定項目は完了しています。</p>
+               <ul>
+                    <li>機器配置</li>
+               </ul>
+               <h3>パラメータ</h3>
+               <h4>●IPアドレス</h4>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>I/F名</th>
+                         <th>IPアドレス</th>
+                         <th>サブネットマスク</th>
+                    </tr>
+                    <tr>
+                         <td rowspan="2">R1</td>
+                         <td>G0/0/0</td>
+                         <td>192.168.10.254</td>
+                         <td>255.255.255.0</td>
+                    </tr>
+                    <tr>
+                         <td>G0/0/1</td>
+                         <td>10.0.12.1</td>
+                         <td>255.255.255.0</td>
+                    </tr>
+                    <tr>
+                         <td rowspan="2">R2</td>
+                         <td>G0/0/0</td>
+                         <td>192.168.20.254</td>
+                         <td>255.255.255.0</td>
+                    </tr>
+                    <tr>
+                         <td>G0/0/1</td>
+                         <td>10.0.12.2</td>
+                         <td>255.255.255.0</td>
+                    </tr>
+               </table>
+               <p></p>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>IPアドレス</th>
+                         <th>サブネットマスク</th>
+                         <th>デフォルトGW</th>
+                    </tr>
+                    <tr>
+                         <td>PC1</td>
+                         <td>192.168.10.1</td>
+                         <td>255.255.255.0</td>
+                         <td>192.168.10.254</td>
+                    </tr>
+                    <tr>
+                         <td>PC2</td>
+                         <td>192.168.20.1</td>
+                         <td>255.255.255.0</td>
+                         <td>192.168.20.254</td>
+                    </tr>
+               </table>
+               <h4>●ルーティング</h4>
+               <table>
+                    <tr>
+                         <th>ホスト名</th>
+                         <th>宛先IPアドレス・サブネットマスク</th>
+                         <th>ネクストホップ</th>
+                    </tr>
+                    <tr>
+                         <td>R1</td>
+                         <td>192.168.20.0 / 255.255.255.0</td>
+                         <td>10.0.12.2</td>
+                    </tr>
+                    <tr>
+                         <td>R2</td>
+                         <td>192.168.10.0 / 255.255.255.0</td>
+                         <td>10.0.12.1</td>
+                    </tr>
+               </table>
+               <h3>手順</h3>
+               <h4>⑴　物理構成図の通り，各機器を接続する。</h4>
+               <h4>⑵　PC1-2のIPアドレスとデフォルトゲートウェイを設定する。</h4>
+               <h4>⑶　SW1-2・R1-2にホスト名を設定する。</h4>
+               <h4>⑷　R1-2のI/Fを有効化し，IPアドレスを設定する。</h4>
+               <h4>⑸　R1-2にスタティックルーティングを設定する。</h4>
+               <h4>⑹　R1-2のルーティングテーブルを見て，R1にPC2，R2にPC1のネットワークへのルートが存在することを確認する。</h4>
+               <h4>⑺　PC1⇒PC2，PC2⇒PC1へのpingが成功することを確認する。</h4>
+               <h3>使用するコマンド</h3>
+               <ul>
+                    <li><code>hostname ＜ホスト名＞</code></li>
+                    <li><code>no shutdown</code></li>
+                    <li><code>ip address ＜IPアドレス＞ ＜サブネットマスク＞</code></li>
+                    <li><code>ip route ＜宛先NWアドレス＞ ＜サブネットマスク＞ ＜ネクストホップ＞</code></li>
+                    <li><code>show ip route</code></li>
+               </ul>
+               <h3>解説</h3>
+               <p>PCなどのクライアント機器は，自らが所属するネットワークと異なる機器と通信を試みるとき，そのルーティングを決まったルータ（＝デフォルトゲートウェイ）に依頼します。今回の例であれば，PC1とPC2ではネットワークが違いますから，PC1がPC2と通信するときは，R1にルーティングを委ねることになります。
+               </p>
+               <div style="text-align:center;">
+                    <img src="01_static_fig01.jpg" width="540px">
+               </div>
+               <p>デフォルトゲートウェイは，パケットの宛先が自らに直接接続された隣接ネットワークであれば，特別な設定の必要なくルーティング出来ますが，そうでないリモートのネットワークの場合は，さらに別のルータ（＝ネクストホップ）にルーティングを依頼しなければなりません。この時，宛先とネクストホップの設定を手動で行うことを，静的ルーティングと言います。
+               </p>
+               <div style="text-align:center;">
+                    <img src="01_static_fig02.jpg" width="660px">
+               </div>
+               <h4>⑴　物理構成図の通り，各機器を接続する。<br>
+                    ⑵　PC1-2のIPアドレスとデフォルトゲートウェイを設定する。</h4>
+               <div class="indent2">
+                    <p>IPアドレス／サブネットマスク・デフォルトゲートウェイ・DNSサーバなど，クライアント端末に関する設定は，「Desktop」→「IP Configuration」から行います。</p>
+                    <div style="text-align:center;">
+                         <img src="01_static_fig03.jpg" width="600px">
+                    </div>
+               </div>
+               <h4>⑶　SW1-2・R1-2にホスト名を設定する。<br>
+                    ⑷　R1-2のI/Fを有効化し，IPアドレスを設定する。</h4>
+               <div class="indent2">
+                    <p>ホスト名を設定するには，<code>hostname ＜ホスト名＞</code>コマンドを使用します。これはルータ・スイッチ共通です。構成が複雑で機器数が多い場合や，telnetで機器を遠隔で操作する際，対象の機器を誤ってしまうことを防ぎます。<br>
+                         CiscoのNW機器のレイヤ3I/F（ルータやL3スイッチのルーテッドポート）は，デフォルトでdownした状態になっています。このままでは使えませんから，<code>no shutdown</code>コマンドでI/Fを有効化します。<br>
+                         IPアドレスの付与には，<code>ip address ＜IPアドレス＞ ＜サブネットマスク＞</code>コマンドを使用します。</p>
+                    <div class="config">
+                         <p>Router# configure terminal<br>
+                              Router(config)# hostname R1<br>
+                              R1(config)# interface g0/0/1<br>
+                              R1(config-if)# ip address 192.168.10.254 255.255.255.0<br>
+                              R1(config-if)# no shutdown<br>
+                              R1(config-if)# interface g0/0/2<br>
+                              R1(config-if)# ip address 10.0.12.1 255.255.255.0<br>
+                              R1(config-if)# no shutdown<br>
+                              R1(config-if)# exit<br>
+                              R1(config)#</p>
+                    </div>
+                    <div class="config">
+                         <p>Router# configure terminal<br>
+                              Router(config)# hostname R2<br>
+                              R2(config)# interface g0/0/1<br>
+                              R2(config-if)# ip address 192.168.20.254 255.255.255.0<br>
+                              R2(config-if)# no shutdown<br>
+                              R2(config-if)# interface g0/0/2<br>
+                              R2(config-if)# ip address 10.0.12.2 255.255.255.0<br>
+                              R2(config-if)# no shutdown<br>
+                              R2(config-if)# exit<br>
+                              R2(config)#</p>
+                    </div>
+               </div>
+               <h4>⑸　R1-2にスタティックルーティングを設定する。</h4>
+               <div class="indent2">
+                    <p>スタティックルーティングの設定は，<code>ip route ＜宛先NWアドレス＞ ＜サブネットマスク＞ ＜ネクストホップ＞</code>で行います。「宛先NW」に行くには，「ネクストホップ」に転送する，といった具合です。
+                    </p>
+                    <div class="config">
+                         <p>R1(config)# ip route 192.168.20.0 255.255.255.0 10.0.12.2<br>
+                              R1(config)# end<br>
+                              R1#</p>
+                    </div>
+                    <div class="config">
+                         <p>R2(config)# ip route 192.168.10.0 255.255.255.0 10.0.12.1<br>
+                              R2(config)# end<br>
+                              R2#</p>
+                    </div>
+               </div>
+               <h4>⑹　R1-2のルーティングテーブルを見て，R1にPC2，R2にPC1のネットワークへのルートが存在することを確認する。</h4>
+               <div class="indent2">
+                    <p><code>show ip route</code>コマンドでルーティングテーブルを確認します。<br>
+                         なお，各行の先頭「S」は，静的ルーティングで設定されていることを表します。「C」は“connected”すなわち直接接続，「L」は“local”すなわちルータ自身を示します。</p>
+                    <div style="text-align:center;">
+                         <img src="01_static_fig04.jpg" width=688px>
+                         <img src="01_static_fig05.jpg" width=688px>
+                    </div>
+               </div>
+               <h4>⑺　PC1⇒PC2，PC2⇒PC1へのpingが成功することを確認する。</h4>
+               <div class="indent2">
+                    <p>コマンドプロンプトからpingを行い，成功することを確認します。</p>
+                    <div style="text-align:center;">
+                         <img src="01_static_fig06.jpg" width=928px>
+                    </div>
+               </div>
+          </div>
+     </div>
+</body>
+
+</html>
