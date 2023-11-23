@@ -33,7 +33,7 @@
                     </ul>
                </div>
                <h3>構成図</h3>
-               <img src="04_NAT-PAT_diagram.jpg" width="900px">
+               <img src="04_nat-pat_diagram.jpg" width="900px">
                <h3>課題</h3>
                <p>Rに<b> NAT・PAT</b>の設定を行い，PC1-3からSVにアクセスできるようにしてください。<br>
                     なお，問題ファイルでは次の設定項目は完了しています。</p>
@@ -195,7 +195,7 @@
                <div class="indent2">
                     <p>OSPFによる経路交換が完了すると，下の画像のようにPC1-3からSVへのアクセスが可能になります。</p>
                     <div style="text-align:center;">
-                         <img src="04_NAT-PAT_fig01.jpg" width=928px>
+                         <img src="04_nat-pat_fig01.jpg" width=928px>
                     </div>
                </div>
                <h4>⑶　R2に，12.12.12.1を送信元IPアドレスとするパケットのみを許可するACLを作成し，G0/0/1にinで適用する。</h4>
@@ -216,7 +216,7 @@
                     <p>一方で，R1からのpingは12.12.12.1を送信元とするため，R2に設定したACLを通過できるため，SVへのpingに成功します。<br>
                          （ルータからのpingは，デフォルトでは出力I/FのIPアドレスが送信元になります）</p>
                     <div style="text-align:center;">
-                         <img src="04_NAT-PAT_fig02.jpg" width=928px>
+                         <img src="04_nat-pat_fig02.jpg" width=928px>
                     </div>
                </div>
                <h4>⑸　R1にACLを作成し，NAT・PATによりIPアドレス変換を行う対象の通信を規定する。</h4>
@@ -266,7 +266,7 @@
                <div class="indent2">
                     <p>NATの設定が正しく行われていると，IPアドレスが変換され，R2に設定したACLを通過できるため，PC1-3からSVへのpingが成功します。</p>
                     <div style="text-align:center;">
-                         <img src="04_NAT-PAT_fig03.jpg" width=928px>
+                         <img src="04_nat-pat_fig03.jpg" width=928px>
                     </div>
                </div>
                <h4>⑼　R1のNATテーブルを確認し，PC1-3のIPアドレスがR1のG0/0/1のIPアドレスに変換されていることを確認する。</h4>
@@ -275,7 +275,7 @@
                          local」（内部ローカルアドレス）が，変換前のクライアントのIPアドレス，「inside global」（内部グローバルアドレス）が，変換後のルータのIPアドレスを表します。<br>
                          PC1-3のIPアドレス（192.168.10.1-3）が，R1のG0/0/1のIPアドレス（12.12.12.1）に変換されていることが分かります。</p>
                     <div style="text-align:center;">
-                         <img src="04_NAT-PAT_fig04.jpg" width=808px>
+                         <img src="04_nat-pat_fig04.jpg" width=808px>
                     </div>
                </div>
           </div>
