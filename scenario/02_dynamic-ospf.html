@@ -253,7 +253,7 @@
                          “State”の値が“FULL”になっていれば，ネイバー関係が成立し，<b>LSDBの同期が完了</b>した状態です。<br>
                          以下に，R1で<code>show ip ospf neighbor</code>を実行した結果を示します。</p>
                     <div style="text-align:center;">
-                         <img src="02_OSPF_fig01.jpg" width=928px>
+                         <img src="02_ospf_fig01.jpg" width=928px>
                     </div>
                </div>
                <h4>⑸　R1-2のルーティングテーブルを見て，R1にPC2，R2にPC1のネットワークへのルートが存在することを確認する。</h4>
@@ -262,14 +262,14 @@
                          なお，先頭の「O」は，OSPFによって学習したルートであることを表しています。<br>
                          以下に，R1で<code>show ip route</code>を実行した結果を示します。</p>
                     <div style="text-align:center;">
-                         <img src="02_OSPF_fig02.jpg" width=928px>
+                         <img src="02_ospf_fig02.jpg" width=928px>
                     </div>
                </div>
                <h4>⑹　PC1⇒PC2，PC2⇒PC1へtracertを行い，R1-R2間のリンクを経由して通信できることを確認する。</h4>
                <div class="indent2">
                     <p>下図の通り，R1-R2間のリンクを経由していることが分かります。</p>
                     <div style="text-align:center;">
-                         <img src="02_OSPF_fig03.jpg" width=928px>
+                         <img src="02_ospf_fig03.jpg" width=928px>
                     </div>
                </div>
                <h4>⑺　R1のG0/0/2の帯域幅を10Mbpsに変更する。</h4>
@@ -295,7 +295,7 @@
                <div class="indent2">
                     <p>PC1からPC2の通信は，下図の通りR1-R3-R2間のリンクを経由するように変化しました。</p>
                     <div style="text-align:center;">
-                         <img src="02_OSPF_fig04.jpg" width=928px>
+                         <img src="02_ospf_fig04.jpg" width=928px>
                     </div>
                     <p>R1のG0/0/2の帯域幅が10Mbpsになったことで，</p>
                     <ul>
